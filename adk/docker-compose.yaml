@@ -1,0 +1,6 @@
+services:
+  wxo:
+    container_name: wxo-adk
+    image: wxo-adk
+    volumes:
+      - .:/wxo-adk

@@ -129,7 +129,59 @@ Para validar se ele está atuando corretamente, podemos expandir a seção de *r
 ![Como criar um Agent no WoX - Parte 23](./images//how-to-create-an-agent-gui-23.png)
 ![Como criar um Agent no WoX - Parte 24](./images//how-to-create-an-agent-gui-24.png)
 
-## 3. Como criar seu primeiro agente via código (Pro code)?
+## 3. Como criar seu primeiro agente via ADK (Pro code)?
+
+O IBM watsonx Orchestrate Agent Development Kit (ADK) é um conjunto de ferramentas (biblioteca Python e comandos na CLI) que permitem a construção e o deploy de *agents* e *tools* para o IBM watsonx Orchestrate de forma programática.
+
+### 3.1. Instalando o ADK
+
+Para facilitar a experiência, foi criado uma imagem Docker que automatiza a criação do ambiente do ADK.
+
+Primeiramente vamos entender o que a [imagem](./adk/Dockerfile) configura no ambiente:
+
+- Como explicado na definição do ADK, ele é formado por um conjunto de ferramentas, incluindo uma biblioteca Python. Sendo assim, a imagem base utilizada é a do Python na versão 3.13. Atualmente, o ADK está disponível a partir da versão 3.11;
+
+- Em seguida é criado e definido `wxo-adk` como o diretório de trabalho, onde serão depositados nossos projetos que forem desenvolvidos;
+
+- Em seguidas são executados três comandos sequencialmente: o primeiro instala a biblioteca do Orchestrate utilizando o gerenciador de pacotes `pip` do Python. O segundo comando cria um ambiente de desenvolvimento local também com o nome `wxo-adk` e esse ambiente é relacionado a nossa instância do Orchestrate na IBM Cloud. Será mostrado como obter o endereço da nossa instância pela Cloud e como passar esse valor como argumento no `build` da imagem. Por último, é feito um comando para ativar o ambiente e passar a API Key de autenticação. Assim como o endereço da instância, a API Key é obtida pela Cloud e passada como argumento no `build` da imagem.
+
+- Comando para fazer o `build` da imagem Docker (é preciso estar dentro do diretório `adk`):
+
+  ```Docker
+  docker build --build-arg WXO_INSTANCE=<URL_INSTANCIA> --build-arg WXO_API_KEY=<API_KEY_CLOUD> -t wxo-adk .
+  ```
+
+  - Para obter a URL da instância:
+
+    ![Obter URL da Instância do WxO](./images/obtain-instance-url.png)
+
+  - Para obter a API Key, será necessário acessar a página de IAM da sua conta IBM Cloud e gerar uma nova chave de API:
+
+    ![Obter API Key da Conta](./images/obtain-account-api-key-1.png)
+
+    ![Obter API Key da Conta](./images/obtain-account-api-key-2.png)
+
+Após a geração da imagem, agora devemos subir o container do nosso ambiente do ADK utilizando o [compose](./adk/docker-compose.yaml). Para isso também é preciso estar dentro do diretório `adk`:
+
+```Docker
+docker-compose up -d
+```
+
+Após a criação do ambiente, para acessá-lo, executamos:
+
+```Docker
+docker container exec -it wxo-adk sh
+```
+
+Para validarmos que estamos dentro do ambiente do ADK, executamos:
+
+```ADK
+orchestrate env list
+```
+
+- E obtemos o seguinte resultado que evidencia que de fato estamos no ambiente do ADK:
+
+  ![Listar ambientes do ADK](./images/adk-environment-list.png)
 
 ## 4. Links
 
