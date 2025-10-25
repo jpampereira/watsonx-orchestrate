@@ -30,6 +30,105 @@ Por fim, agora estamos na página inicial da instância que criamos do Watson Or
 
 ## 2. Como criar seu primeiro agente pela interface gráfica (No code)?
 
+Nesse primeiro exemplo vamos criar o Agent a partir da interface gráfica. Na página inicial da sua instância do Orchestrate, selecionar o menu hambúrguer no campo superior esquerdo e dentro do submenu **Build**, selecionar a opção **Agent Builder**.
+
+![Como criar um Agent no WoX - Parte 1](./images//how-to-create-an-agent-gui-1.png)
+
+Você será redirecionado para uma página onde é possível visualizar todos os seus agentes (*agents*) e ferramentas (*tools*) criados, além de métricas como quantidade de mensagens trocadas pelos agentes, falhas identificadas e latência na comunicação. Para criar um novo agente, basta clicar em **Create agent**.
+
+![Como criar um Agent no WoX - Parte 2](./images//how-to-create-an-agent-gui-2.png)
+
+O primeiro passo é definir se você deseja criar o agente do zero (*from scratch*) ou se quer reaproveitar algum outro template já existente. Em seguida é preciso definir um nome para o agente e por último uma descrição. Clicar em **Create** para ir para a próxima etapa.
+
+- A descrição não ira determinar o comportamento (*behavior*) do seu agente. Ele serve para delimitar o escopo do agente e ajudar outros agentes a entender para que ele serve para no caso de necessidade, fazer a melhor escolha por qual a gente chamar para uma determinada tarefa.
+
+- A descrição deve conter o propósito do agente, e as ferramentas e outros agentes que ele se comunica.
+
+![Como criar um Agent no WoX - Parte 3](./images//how-to-create-an-agent-gui-3.png)
+
+Já na página onde iremos definir as principais configurações do a gente, no primeiro quadrado podemos definir qual modelo de IA o nosso a gente irá utilizar. Via interface gráfica as opções são mais limitadas, mas no caso do a gente ser configurado em Pro Code, há mais opções de modelos disponíveis. Em **Welcome Message**, a mensagem definida irá substituir *"Hello, welcome to watsonx Orchestrate"*.
+
+![Como criar um Agent no WoX - Parte 4](./images//how-to-create-an-agent-gui-4.png)
+
+Podemos definir em **Quick start prompts** alguns exemplos de prompts para mostrar para o usuário algumas opções do que ele pode solicitar para o agente.
+
+![Como criar um Agent no WoX - Parte 5](./images//how-to-create-an-agent-gui-5.png)
+
+Em **Knowledge**, é onde definimos a base de conhecimento do nosso agente, fornecendo os arquivos que ele terá acesso para consulta. Para adicionar uma nova base clicamos em **Choose knowledge**. Em **Edit knowledge settings**, podemos alterar alguns parâmetros referentes as bases.
+
+![Como criar um Agent no WoX - Parte 6](./images//how-to-create-an-agent-gui-6.png)
+
+Devemos escolher que tipo de base de conhecimento desejamos importar. Podemos inserir um arquivo diretamente nessa interface ou apontar para repositórios externos, como um storage.
+
+![Como criar um Agent no WoX - Parte 7](./images//how-to-create-an-agent-gui-7.png)
+
+No nosso exemplo escolhemos a opção **Upload files**, onde anexamos os arquivos diretamente pela interface do Orchestrate.
+
+![Como criar um Agent no WoX - Parte 8](./images//how-to-create-an-agent-gui-8.png)
+
+Após adicionar o arquivo, devemos colocar uma descrição para que o agente saiba para que serve aquele documento. Para submeter essa base de conhecimento, basta clicar em **Save**.
+
+![Como criar um Agent no WoX - Parte 9](./images//how-to-create-an-agent-gui-9.png)
+
+Em **Toolset** definimos as ferramentas que o nosso a gente terá acesso, como por exemplo, uma API ou serviço que ele irá consumir dados. Para criar uma nova ferramenta clicamos em **Add tool**.
+
+![Como criar um Agent no WoX - Parte 10](./images//how-to-create-an-agent-gui-10.png)
+
+Temos várias opções de ferramentas:
+
+1. Podemos adicionar uma ferramenta diretamente do catálogo. A plataforma oferece integração com diversas ferramentas de mercado, como por exemplo, o Service Now em poucos passos, sem a necessidade de se configurar tudo manualmente;
+
+2. Para o caso de adicionar ferramentas da instância local, essa está disponível apenas na versão *On Premises* do Orchestrate e permite adicionar programas que são executados no mesmo ambiente;
+
+3. A opção de adicionar por arquivo ou MCP server permite integrar uma API a partir do seu swagger;
+
+4. Por último, na opção *Agentic Worflow*, é possível construir um fluxo diretamente pela interface do Orchestrate utilizando caixas com drag-and-drop codificáveis e que se integram com outras *Tools* e *Agents*.
+
+![Como criar um Agent no WoX - Parte 11](./images//how-to-create-an-agent-gui-11.png)
+
+No nosso caso, optamos pela criação da ferramenta a partir de um arquivo.
+
+![Como criar um Agent no WoX - Parte 12](./images//how-to-create-an-agent-gui-12.png)
+
+Para isso importamos o YAML do Swagger da nossa API e automaticamente o Orchestrate já identificou todos os endpoints que existem dentro dele. Podemos selecionar apenas aqueles que desejamos que sejam inseridos no nosso agente.
+
+![Como criar um Agent no WoX - Parte 13](./images//how-to-create-an-agent-gui-13.png)
+
+Cada endpoint será considerado uma ferramenta, e todos eles estarão disponíveis para serem consumidos por outros agentes. É importante que os endpoints estejam bem descritos na documentação para que o agente tenha ciência do que cada um deles faz.
+
+![Como criar um Agent no WoX - Parte 14](./images//how-to-create-an-agent-gui-14.png)
+
+![Como criar um Agent no WoX - Parte 15](./images//how-to-create-an-agent-gui-15.png)
+
+Além das ferramentas, podemos definir também outros agentes que o nosso pode se comunicar. Nesse exemplo vamos seguir apenas com um único agente, porém, esse caso será de extrema importância quando estivermos falando sobre arquiteturas de multiagentes.
+
+![Como criar um Agent no WoX - Parte 16](./images//how-to-create-an-agent-gui-16.png)
+
+Na seção de **Behavior** (comportamento), é onde vamos inserir o prompt que descreve como nosso agente deve funcionar, indicando o seu contexto, orientando as situações em que ele deve utilizar cada uma das bases de conhecimentos, ferramentas e agentes configurados, definindo como ele deve se comportar em determinadas situações e se necessário, definindo os limites de atuação (*guard-rails*). Esses comportamentos também podem ser configurados na seção de **Guidelines**.
+
+![Como criar um Agent no WoX - Parte 17](./images//how-to-create-an-agent-gui-17.png)
+
+Por último, definimos por qual canal aquele agente ira se comunicar (Teams, Facebook, API etc.).
+
+![Como criar um Agent no WoX - Parte 18](./images//how-to-create-an-agent-gui-18.png)
+
+Para publicar o seu agente você deve clicar em **Deploy**. Nesse momento um modal trazendo a revisão dos conteúdos inseridos. Caso esteja tudo ok, clique novamente em **Deploy**.
+
+![Como criar um Agent no WoX - Parte 19](./images//how-to-create-an-agent-gui-19.png)
+
+Seremos redirecionados novamente para a página do Orchestrate que contém todos os nossos agentes e ferramentas criados. Podemos perceber que o agente que acabamos de criar já aparece e contém uma tag de `Live`, o que indica que ele já está rodando.
+
+![Como criar um Agent no WoX - Parte 20](./images//how-to-create-an-agent-gui-20.png)
+
+Seja durante a fase de configuração ou após a publicação, podemos testar o nosso agente enviando prompts e verificando se ele está atuando da forma esperada.
+
+Para validar se ele está atuando corretamente, podemos expandir a seção de *reasoning* (raciocínio) para entender de qual base de conhecimento, ferramenta ou agente ele retirou aquela resposta.
+
+![Como criar um Agent no WoX - Parte 21](./images//how-to-create-an-agent-gui-21.png)
+![Como criar um Agent no WoX - Parte 22](./images//how-to-create-an-agent-gui-22.png)
+![Como criar um Agent no WoX - Parte 23](./images//how-to-create-an-agent-gui-23.png)
+![Como criar um Agent no WoX - Parte 24](./images//how-to-create-an-agent-gui-24.png)
+
 ## 3. Como criar seu primeiro agente via código (Pro code)?
 
 ## 4. Links
