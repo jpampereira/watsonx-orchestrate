@@ -1,6 +1,6 @@
 # Anotações - Watson X Orchestrate
 
-## 1. Como criar uma instância do Orchestrate?
+## 1. Como criar uma instância do Orchestrate na IBM Cloud?
 
 O primeiro passo para criar a sua instância do WatsonX Orchestrate é criar uma conta na IBM Cloud. Após o acesso, o usuário será encaminha para a página inicial da plataforma, conhecida como Dashboard. Nessa página, clicar no botão destacado em vermelho **Criar recurso**.
 
@@ -128,6 +128,34 @@ Para validar se ele está atuando corretamente, podemos expandir a seção de *r
 ![Como criar um Agent no WoX - Parte 22](./images//how-to-create-an-agent-gui-22.png)
 ![Como criar um Agent no WoX - Parte 23](./images//how-to-create-an-agent-gui-23.png)
 ![Como criar um Agent no WoX - Parte 24](./images//how-to-create-an-agent-gui-24.png)
+
+### 2.1. Criando uma Solução Multiagente
+
+Em um próximo exercício, a ideia era construir um agente que auxiliasse nas tarefas de um banco, o GFM Bank. Esse banco contava com funcionários de diferentes áreas que desempenhavam diversas operações: O pessoal do caixa trabalhava com consulta de saldo e transferências. Quando era necessário mexer com cheque especial (solicitar ou desabilitar) ou pedir a reversão de uma transferência, o pessoal do caixa deveria encaminhar para o time de Backoffice. Quando haviam dúvidas sobre os produtos oferecidos pelo banco, era necessário encaminhar para os especialistas de produto. Essas operações demoravam horas e exigiam do cliente entrar em contato com diversas pessoas. A ideia nesse exercício então foi implementar uma solução onde cada uma dessas áreas era de responsabilidades de um agente e todos eles eram coordenados por um agente orquestrador.
+
+![Arquitetura Multiagente para o Banco GMF](./images/banking-backoffice-exercise-architecture.png)
+
+Na página onde podemos visualizar todos os agentes e ferramentas que a nossa instância possui, podemos ver a presença de quatro agentes destacados em cores diferentes. Os destacados em laranja são os agentes especializados, isto é, são aqueles que serão invocados pelo agente orquestrador quando este identificar que a tarefa solicitada pelo usuário pode ser resolvida por um determinado agente especialista. O destacado em vermelho é o agente orquestrador, que é aquele que irá interagir diretamente com o usuário e receber as solicitações.
+
+![Solução de Multiagente para o Banco GMF - Parte 1](./images/banking-backoffice-exercise-1.png)
+
+Para que os agentes especialistas não fiquem disponíveis para o usuário via interface do WatsonX Orchestrate, na sua configuração devemos desabilitar a opção **Home Page** em **Channels**.
+
+![Solução de Multiagente para o Banco GMF - Parte 2](./images/banking-backoffice-exercise-2.png)
+
+Na seção **Agents**, devemos configurar todos os agentes que o nosso orquestrador pode se comunicar. Mesmo que existam mais agentes dentro da nossa instância do Orchestrate, o nosso agente só visualizará àqueles que foram configurados nessa etapa.
+
+- Vemos que apenas dois agentes foram configurados. Isso porque se olharmos para o desenho da arquitetura da solução, vimos que o orquestrador não se comunica diretamente com o agente de Backoffice, sendo isso responsabilidade do agente de caixa.
+
+![Solução de Multiagente para o Banco GMF - Parte 3](./images/banking-backoffice-exercise-3.png)
+
+Quando clicamos em **Add agent** temos a opção de adicionar um agente do catálogo (por exemplo, uma integração com o Service Now sem a necessidade de você construir essa comunicação na mão), um agente da sua instância (que é o nosso caso), ou agentes externos.
+
+![Solução de Multiagente para o Banco GMF - Parte 4](./images/banking-backoffice-exercise-4.png)
+
+Se voltarmos na página inicial do Orchestrate onde podemos interagir via chat com os nosso assistentes, vamos ver que apenas o agente orquestrador estará disponível para conversa, como já era esperado.
+
+![Solução de Multiagente para o Banco GMF - Parte 5](./images/banking-backoffice-exercise-5.png)
 
 ## 3. Como criar seu primeiro agente via ADK (Pro code)?
 
