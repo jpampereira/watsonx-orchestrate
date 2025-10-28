@@ -211,6 +211,166 @@ orchestrate env list
 
   ![Listar ambientes do ADK](./images/adk-environment-list.png)
 
+### 3.2. Criando agente pelo ADK
+
+De dentro do container do nosso ambiente do ADK, antes de criarmos nosso agente, vamos executar alguns comandos para criar o sistema de arquivos da nossa aplicação:
+
+```Linux
+mkdir -p /wxo-adk/calculator/tools
+touch /wxo-adk/calculator/calculator_agent.yaml
+touch /wxo-adk/calculator/tools/calculator_tool.py
+```
+
+- Por questões de organização, o agente da solução deve ficar na pasta raiz do projeto (`calculator`), enquanto as ferramentas utilizadas por ele devem ter seus próprios diretórios (`tools`, `agents`, `knowledge` etc.)
+
+Com isso podemos iniciar a criação do nosso agente. O primeiro passo é criar as nossas tools, copiando o conteúdo abaixo para dentro do arquivo `tools/calculator_tool.py`:
+
+```Python
+from ibm_watsonx_orchestrate.agent_builder.tools import tool
+
+@tool
+def add(a: float, b: float) -> float:
+    """
+    Add two numbers together.
+    
+    :param a: The first number to add
+    :param b: The second number to add
+    :returns: The sum of a and b
+    """
+    return a + b
+
+@tool
+def subtract(a: float, b: float) -> float:
+    """
+    Subtract the second number from the first number.
+    
+    :param a: The number to subtract from
+    :param b: The number to subtract
+    :returns: The difference of a and b
+    """
+    return a - b
+
+@tool
+def multiply(a: float, b: float) -> float:
+    """
+    Multiply two numbers together.
+    
+    :param a: The first number to multiply
+    :param b: The second number to multiply
+    :returns: The product of a and b
+    """
+    return a * b
+
+@tool
+def divide(a: float, b: float) -> float:
+    """
+    Divide the first number by the second number.
+    
+    :param a: The dividend (number to be divided)
+    :param b: The divisor (number to divide by)
+    :returns: The quotient of a divided by b
+    """
+    if b == 0:
+        raise ValueError("Cannot divide by zero")
+    return a / b
+```
+
+- No exemplo da interface gráfica vimos a criação da tool a partir do Swagger de uma API que estava disponível na web. Porém, também podemos importar um script Python e este será executado dentro da Cloud;
+
+- No início do script é preciso importar a biblioteca do Orchestrate para Python e em cada função que será uma tool, adicionar o marcador `@tool` logo acima dela;
+
+- Logo após a assinatura da função, inserimos um comentário de múltiplas linhas descrevendo o que aquela ferramenta faz. Relembrando que esse passo é de extrema importância para que o agente tenha noção da atividade que aquela ferramenta se propõe a resolver para conseguir rotear os problemas para ela corretamente;
+
+- Após o comentário há o código Python da nossa ferramenta, que no caso são quatro funções, cada uma representando uma operação matemática (soma, subtração, multiplicação e divisão).
+
+Com o desenvolvimento finalizado, agora devemos importar as ferramentas para a nossa instância do Orchestrate na Cloud:
+
+- Comando:
+
+  ```WatsonX Orchestrate
+  orchestrate tools import -k python -f tools/calculator_tool.py
+  ```
+
+- Resposta:
+
+  ```WatsonX Orchestrate
+  [INFO] - Tool 'add' imported successfully
+  [INFO] - Tool 'divide' imported successfully
+  [INFO] - Tool 'multiply' imported successfully
+  [INFO] - Tool 'subtract' imported successfully
+  ```
+
+- Interface Gráfica:
+
+  ![Ferramentas criadas via ADK na Cloud](./images/adk-tools-in-gui.png)
+
+Após a criação das ferramentas, podemos então criar o nosso agente, copiando o seguinte conteúdo para dentro do arquivo `calculator_agent.yaml`:
+
+```YAML
+spec_version: v1
+kind: native
+name: calculator_agent
+description: Performs mathematical calculations including addition, subtraction, multiplication, and division.
+style: react
+llm: watsonx/meta-llama/llama-3-2-90b-vision-instruct
+instructions: |
+  You are a calculator agent that can perform basic mathematical operations.
+  
+  • When asked to add or sum numbers, call the `add` tool
+  • When asked to subtract numbers, call the `subtract` tool  
+  • When asked to multiply numbers, call the `multiply` tool
+  • When asked to divide numbers, call the `divide` tool
+  
+  Always use the appropriate tool for the mathematical operation requested.
+  Do NOT compute results yourself - always use the tools.
+  After the tool returns a result, present it clearly to the user.
+  
+  Handle these types of requests:
+  - "add 5 and 3" or "5 + 3" → use add tool
+  - "subtract 10 from 15" or "15 - 10" → use subtract tool
+  - "multiply 4 by 6" or "4 * 6" → use multiply tool
+  - "divide 20 by 4" or "20 / 4" → use divide tool
+tools:
+  - add
+  - subtract
+  - multiply
+  - divide
+```
+
+- No arquivo apresentado acima, fazemos as mesmas configurações vistas anteriormente pela interface gráfica: definimos um nome pro nosso agente (`name`), uma descrição (`description`), o estilo (`style`), o modelo (`llm`), o comportamento (`instructions`) e as ferramentas (`tools`);
+
+- Não aparecem nesse arquivo pois não foram contemplados no exemplo acima, mas também podemos configurar a mensagem de boas-vindas (`welcome_content`), os prompts de início (`starter_prompts`), outros agentes colaborativos (`collaboratos`) e definir bases de conhecimento (`knowledge_base`);
+
+- Para entender como cada um desses atributos funcionam, basta acessar a documentação oficial do ADK. Link referenciado no final desse arquivo;
+
+- Como mencionado na construção do agente via interface gráfica, as opções por lá de modelos são mais limitadas, enquanto aqui pelo ADK existem mais opções. Para conhecer todas as disponíveis, basta executar o seguinte comando:
+
+  ```WatsonX Orchestrate
+  orchestrate models list
+  ```
+
+Com o desenvolvimento finalizado, agora devemos importar o agente para a nossa instância do Orchestrate na Cloud:
+
+- Comando:
+
+  ```WatsonX Orchestrate
+  orchestrate agents import -f calculator_agent.yaml
+  ```
+
+- Resposta:
+
+  ```WatsonX Orchestrate
+  [INFO] - Agent 'calculator_agent' imported successfully
+  ```
+
+- Interface Gráfica:
+
+  ![Agente criado via ADK na Cloud](./images/adk-agent-in-gui.png)
+
+Executando esse agente pela interface da cloud e expandindo seu *reasoning*, podemos ver ele chamando cada uma das ferramentas para cada uma das etapas de resolução da equação matemática, inclusive respeitando a ordem de prioridade das operações:
+
+![Executando agente criado via ADK](./images/adk-agent-running-in-gui.png)
+
 ## 4. Links
 
 - [Documentação WatsonX Orchestrate](https://www.ibm.com/docs/en/watsonx/watson-orchestrate/base)
