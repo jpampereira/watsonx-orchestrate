@@ -185,6 +185,8 @@ Primeiramente vamos entender o que a [imagem](./adk/Dockerfile) configura no amb
 
   - Para obter a API Key, será necessário acessar a página de IAM da sua conta IBM Cloud e gerar uma nova chave de API:
 
+    - **Dica:** Possivelmente você pode precisar dessa API Key várias vezes para ficar reativando o ambiente que por algum motivo, talvez inatividade, caia constantemente. Portanto, quando gerar a nova API Key, faça o download dela e jogue dentro do diretório desse projeto, pois, apesar de ser um arquivo sensível e que não deve ficar exposto no seu repositório, já existe um arquivo `.gitignore` configurado para não permitir que esse arquivo vá pro seu repositório online quando você fizer um `push`.
+
     ![Obter API Key da Conta](./images/obtain-account-api-key-1.png)
 
     ![Obter API Key da Conta](./images/obtain-account-api-key-2.png)
